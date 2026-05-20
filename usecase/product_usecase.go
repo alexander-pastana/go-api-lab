@@ -3,6 +3,7 @@ package usecase
 import (
 	"github.com/alexander-pastana/go-api-lab/model"
 	"github.com/alexander-pastana/go-api-lab/repository"
+	"errors"
 )
 
 type ProductUsecase struct {
@@ -41,4 +42,21 @@ func (pu *ProductUsecase) GetProductById(id_product int) (*model.Product, error)
 
 	return product, nil
 
+}
+
+func (pu *ProductUsecase) UpdateProduct(product model.Product) (model.Product, error) {
+	//Checa se o id existe para poder atualizar
+	_, err := pu.GetProductById(product.ID)
+	//tratativa de erro
+	if err != nil {
+		return model.Product{}, errors.New("Produto não encontrado")
+	}
+	//func de atualizar produto
+	err = pu.repository.UpdateProduct(product)
+	//tratativa de erro
+	if err != nil {
+		return model.Product{}, err
+	}
+
+	return product, nil
 }

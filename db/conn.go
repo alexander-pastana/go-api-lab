@@ -18,13 +18,17 @@ const (
 )
 
 func ConnectDB() (*sql.DB, error) {
+	//Variável que guarda a string com os dados de acesso ao bd
 	psqInfo := fmt.Sprintf("host=%s port=%d user=%s password=%d dbname=%s sslmode=disable", host, port, user, password, dbname)
+
+	//Função que valida os argumentos e inicializa a estrutura de conexão
 	db, err := sql.Open("postgres", psqInfo)
 
 	if err != nil {
 		panic(err)
 	}
 
+	//Para testar se o banco está realmente acessível. Ping precisa do sql.Open
 	err = db.Ping()
 	if err != nil {
 		panic(err)
