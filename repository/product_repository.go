@@ -111,3 +111,21 @@ func (pr *ProductRepository) UpdateProduct(product model.Product) error {
 	query.Close()
 	return nil
 }
+
+func (pr *ProductRepository) DeleteProduct(id_product int) error {
+	query, err := pr.connection.Prepare("DELETE FROM product WHERE id = $1")
+	if err != nil {
+		fmt.Println(err)
+		return err
+	} 
+	// Se não deu erro, aí sim dizemos para fechar no final da função com um único defer!
+    defer query.Close()
+
+	_, err = query.Exec(id_product)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	} 
+
+	return nil
+}

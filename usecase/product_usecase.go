@@ -1,9 +1,9 @@
 package usecase
 
 import (
+	"errors"
 	"github.com/alexander-pastana/go-api-lab/model"
 	"github.com/alexander-pastana/go-api-lab/repository"
-	"errors"
 )
 
 type ProductUsecase struct {
@@ -59,4 +59,20 @@ func (pu *ProductUsecase) UpdateProduct(product model.Product) (model.Product, e
 	}
 
 	return product, nil
+}
+
+func (pu *ProductUsecase) DeleteProduct(id_product int) error {
+	product, err := pu.GetProductById(id_product)
+	// 1. Se o banco respondeu ok, mas o produto veio vazio (nulo), significa que não existe!
+	if product == nil {
+		return errors.New("Produto não encontrado")
+	}
+
+	err = pu.repository.DeleteProduct(id_product)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }

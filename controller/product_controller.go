@@ -110,7 +110,7 @@ func (p *productController) UpdateProduct(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, response)
 		return
 	}
-	
+
 	var product model.Product
 	err = ctx.BindJSON(&product)
 	if err != nil {
@@ -118,7 +118,7 @@ func (p *productController) UpdateProduct(ctx *gin.Context) {
 		return
 	}
 
-	product.ID = productId 
+	product.ID = productId
 
 	updatedProduct, err := p.productUsecase.UpdateProduct(product)
 	if err != nil {
@@ -133,6 +133,44 @@ func (p *productController) UpdateProduct(ctx *gin.Context) {
 	}
 	//quando você altera algo existente (como no Update), o padrão mais comum é usar http.StatusOK (código 200).
 	ctx.JSON(http.StatusOK, updatedProduct)
+}
+
+func (p *productController) DeleteProduct(ctx *gin.Context) {
+	id := ctx.Param("productId")
+	if id == "" {
+		response := model.Response{
+			Message: "Id do produto não pode ser nulo",
+		}
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	id_product, err := strconv.Atoi(id)
+	if err != nil {
+		response := model.Response{
+			Message: "Id do produto precisa ser um número",
+		}
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	err = p.productUsecase.DeleteProduct(id_product)
+	if err != nil {
+		if err.Error() == "Produto não encontrado" {
+			//Cria um map com o gin, para adicionar o erro no json
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao deletar produto"})
+        return
+
+	}
+
+	response := model.Response{
+		Message: "Produto deletado com sucesso!",
+	}
+	ctx.JSON(http.StatusOK, response)
 }
 
 // products := []model.Product{
