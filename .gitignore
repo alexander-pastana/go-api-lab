@@ -1,0 +1,15 @@
+# Variáveis de ambiente (Segredos)
+.env
+
+# Banco de dados e logs
+data/
+*.log
+
+# Pastas de IDE e sistema
+.vscode/
+.idea/
+.DS_Store
+
+# Binários compilados
+go-api-lab
+*.exe
