@@ -13,47 +13,43 @@ import (
 )
 
 func main() {
-	// Carrega o arquivo .env
+	// --- Configurações Iniciais ---
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Erro ao carregar o arquivo .env")
 	}
 
-	// Puxa a chave secreta do arquivo .env
 	secretKey := os.Getenv("SECRET_KEY")
-	//fmt.Println("Chave Secreta carregada com sucesso:", secretKey)
-
-	server := gin.Default()
 
 	dbConnection, err := db.ConnectDB()
 	if err != nil {
 		panic(err)
 	}
 
+	server := gin.Default()
+
+	// --- Inicialização de Camadas: Usuário ---
 	UserRepository := repository.NewUserRepository(dbConnection)
 	UserUsecase := usecase.NewUserUseCase(UserRepository, secretKey)
 	UserController := controller.NewUserController(UserUsecase)
 
-	userRoutes := server.Group("/users")
-	{
-		// O Gin junta o "/users" como prefixo do grupo com a rota informada
-		userRoutes.POST("/signup", UserController.SignUp)
-		userRoutes.POST("/signin", UserController.SignIn)
-	}
-
-	//Camada repository
+	// --- Inicialização de Camadas: Produto ---
 	ProductRepository := repository.NewProductRepository(dbConnection)
-	//Camada Usecase
 	ProductUsecase := usecase.NewProductUseCase(ProductRepository)
-	//Camada de controllers
 	productController := controller.NewProductController(ProductUsecase)
 
+	// --- Rotas ---
 	server.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{
 			"message": "pong",
 		})
-
 	})
+
+	userRoutes := server.Group("/users")
+	{
+		userRoutes.POST("/signup", UserController.SignUp)
+		userRoutes.POST("/signin", UserController.SignIn)
+	}
 
 	productRoutes := server.Group("/products")
 	productRoutes.Use(controller.Auth(UserUsecase))
@@ -64,5 +60,7 @@ func main() {
 		productRoutes.PUT("/:productId", productController.UpdateProduct)
 		productRoutes.DELETE("/:productId", productController.DeleteProduct)
 	}
+
+	// --- Execução ---
 	server.Run(":8000")
 }
