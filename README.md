@@ -185,22 +185,6 @@ Durante o desenvolvimento, foram trabalhados aspectos como:
 - Organização de código em camadas
 - Tratamento de erros
 - Construção de APIs seguras e organizadas
-  
----
-
-# 🔄 Próximos passos
-
-Melhorias planejadas para próximas versões:
-
-- Testes unitários
-- Swagger/OpenAPI
-- Logs estruturados
-- Paginação
-- Validações mais robustas
-- CI/CD
-- Deploy em cloud
-- Refresh Token
-- Observabilidade
 
 ---
 
